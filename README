@@ -353,7 +353,8 @@ $string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
   REMOTE_BASE_DIR
 
 
-Consegues organizar suas configurações por ambientes e executar suas tarefas sobre as configurações de um ambiente espefícico.
+_________________________________________________________
+
 
 
 @example
@@ -383,3 +384,5 @@ task('deploy', function(){
 Any question
 
 Steven Koch <stvkoch@gmail.com>
+
+by lellol.com and inov.es
