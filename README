@@ -1,4 +1,15 @@
 
+---------------------------------------------------------------------
+    --- Sugar - deploying applications to remote servers ---
+---------------------------------------------------------------------
+
+SUGAR help us create, manager and execute deploys task. 
+
+Example see deploy.php file! This is useful example:
+  if you run 'sugar list', you see all task created on deploy file
+  if you run 'sugar git', you run all tasks git. First diff, later add, commit and push to server
+  if you run 'sugar deploy', runs a series of tasks. First asks if you want to perform the git tasks, run any test and connect via ssh server and execute command git pull
+
 
 
 
