@@ -1,5 +1,8 @@
-==install==
 
+
+
+
+@install
 
   dependencies
     - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
@@ -8,12 +11,22 @@
         - openssl (brew install openssl) or (apt-get install open)
 
 
-#install
+install
  cd ~
  git clone git://github.com/stvkoch/Sugar.git
  sudo ln -s ~/sugar /usr/bin/sugar
 
 
+
+Now you can execute sugar commands on your project.
+
+@example
+  sugar list
+  sugar help
+  #very especify task
+  sugar hierarchyTaskName ChildiherarchyTaskName ChildChildhierarchyTaskName
+  #run hierarchyTaskName, ChildiherarchyTaskName and ChildChildhierarchyTaskName
+  sugar hierarchyTaskName 
 
 Available commands:
  * help or commands  Prints this help
@@ -21,3 +34,284 @@ Available commands:
  * tasks or list     List all task on stack
  * task              Run task
  * clear             Clear terminal
+
+
+You can run sugar command directly on prompt of terminal
+
+@example: see deploy.php file
+  cd ~/Site/application
+  sugar list
+  sugar deploy
+
+
+Create new task:
+
+  task('deploy', function(){
+    message('woow... I ready to deploy my code');
+  });
+
+
+
+  ##example hierarchy tasks
+
+  //sugar git (run add, commit and push)
+  task('git', 'diff', function(){
+    local('cd '. get('LOCAL_BASE_DIR'));
+    $message = local('git diff');
+    message($message);
+    //if you like, send e-mail with diff
+  });
+  task('git', 'add', function(){
+    local('cd '. get('LOCAL_BASE_DIR'));
+    local('git add .', true);
+  });
+  task('git', 'commit', function(){
+    local('cd '. get('LOCAL_BASE_DIR'));
+    $messageCommit = prompt('Message Commit:');
+    local("git commit -m '".$messageCommit."'");
+  });
+  task('git', 'push', function(){
+    local('cd '. get('LOCAL_BASE_DIR'));
+    local('git push');
+  });
+
+In 'git' example you can run a specific task:
+  sugar git diff 
+    ##run only task git diff
+
+or If you like run all hierarchy tasks: 
+sugar git
+ ##run all git tasks. diff, add, commit and push
+
+
+----
+
+
+
+@Commands
+
+
+========================================================
+                    Set
+========================================================
+
+Set configuration of environment
+
+set($cons, $value, $env='master')
+
+
+
+========================================================
+                    get
+========================================================
+
+Get specific configuration of environment
+
+get($cons, $env='master')
+
+
+
+
+========================================================
+                    get_config_env
+========================================================
+
+Get configuration of environment
+
+get_config_env($env='master')
+
+
+
+========================================================
+                    Task
+========================================================
+
+Create new task
+
+task()
+
+@example
+//create deploy.php on root of your project
+  <?
+  
+  set('SSH_USERNAME', 'username1' );
+  set('SSH_PASSWORD', 'passcrypts1');
+  set('SSH_HOST',     'production.hostname.local');
+
+  ...
+
+  task('test', 'frontend', function(){
+   require_once 'frontendTest.php';
+   require_once 'PHPUnit.php';
+   $suite  = new PHPUnit_TestSuite("FrontendTest");
+   $result = PHPUnit::run($suite);
+   if($result ->errorCount()>0){
+     message('Errroor you not can deploy', 'red');
+   }else{
+     sugar('git');
+     sugar('deploy');
+   }
+  });
+
+
+
+========================================================
+                    remote
+========================================================
+
+Execute command on remote computer via SSH
+
+remote($command, $send_output=false)
+
+
+
+
+========================================================
+                    local
+========================================================
+
+Execute command on local computer
+
+local($command, $send_output=false)
+
+
+
+
+========================================================
+                    remote_local
+========================================================
+
+
+Copy recursive file from remote directory to local directory
+
+remote_local($path_remote, $path_local)
+
+
+
+
+========================================================
+                    local_remote
+========================================================
+
+Copy recursive file from local directory to remote directory
+
+local_remote($path_local, $path_remote)
+
+
+
+
+========================================================
+                    sugar
+========================================================
+
+Run hierarchy tasks. You can run task inside tasks.
+
+
+sugar()
+
+
+
+
+========================================================
+                    current_environment
+========================================================
+
+Add new environment on stack
+
+open_environment($environment)
+
+
+
+========================================================
+                    current_environment
+========================================================
+
+Remove of stack environment
+
+close_environment($environment)
+
+
+
+
+========================================================
+                    current_environment
+========================================================
+
+Return current environment on stack
+
+$env = current_environment()
+$env->name()
+
+
+
+
+========================================================
+                    message
+========================================================
+
+Show message on terminal
+
+message($message, $fgColor = null, $bgColor = null, $style = null)
+
+
+
+
+========================================================
+                    prompt
+========================================================
+
+Ready to accept you input
+
+$string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
+
+
+
+
+========================================================
+                    configurations
+========================================================
+
+
+  SSH_USERNAME, 
+  SSH_PASSWORD, 
+  SSH_HOST, 
+  SSH_PORT,
+  SSH_PUBLIC_KEY, (if set public_key and private_key ssh use this try connect)
+  SSH_PRIVATE_KEY,(if set public_key and private_key ssh use this try connect)
+  SSH_SECRET (if set public_key and private_key ssh use this try connect)
+  
+//configuration PATHs
+  LOCAL_BASE_DIR, 
+  REMOTE_BASE_DIR
+
+
+Consegues organizar suas configurações por ambientes e executar suas tarefas sobre as configurações de um ambiente espefícico.
+
+
+@example
+
+set('SSH_USERNAME', 'userprod', 'production');
+set('SSH_PASSWORD', 'passprod', 'production');
+
+set('SSH_USERNAME', 'userstag', 'staging');
+set('SSH_PASSWORD', 'passstag', 'staging');
+
+task('deploy', function(){
+  open_environment('staging');
+  remote('git pull');
+
+  open_environment('production');
+  remote('git pull'); //run on ssh production
+  close_environment('production');
+
+  remote('service restart apache');//on staging environment
+  close_environment('staging');
+});
+
+
+
+
+
+Any question
+
+Steven Koch <stvkoch@gmail.com>
