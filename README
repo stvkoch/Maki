@@ -18,6 +18,11 @@ How to?
 
 
 
+@roadmap:
+  - implement remote_local function
+  - implement local_remote function
+
+
 ---------------------------------------------------------------------
                     install
 ---------------------------------------------------------------------
