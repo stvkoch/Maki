@@ -3,71 +3,94 @@
     --- Sugar - deploying applications to remote servers ---
 ---------------------------------------------------------------------
 
-SUGAR helps us to create, manage and execute deploys task. 
 
-Example see deploy.php file! This is useful example:
-  if you run 'sugar list', you see all task created on deploy file
-  if you run 'sugar git', you run all tasks git. First diff, later add, commit and push to server
-  if you run 'sugar deploy', runs a series of tasks. First asks if you want to perform the git tasks, run any test and connect via ssh server and execute command git pull
+What is it?
+  - SUGAR helps us to create, manage and execute deploys task.
+
+What makes?
+  - Executes commands on local servers, testing environment and productions servers
+
+How to?
+  - first step is to install on your computer
+  - Then, at the root of your project to create a file named 'deploy.php'
+  - Add tasks to the file 'deploy.php'
+  - Execute the commands 'sugar ...'
 
 
 
+---------------------------------------------------------------------
+                    install
+---------------------------------------------------------------------
 
-@install
-
-  dependencies
+You need this dependencies:
     - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
-      pecl ssh2 has dependency:
-        - libssh (brew install libssh) or (apt-get install libssh)
-        - openssl (brew install openssl) or (apt-get install openssl)
+        pecl ssh2 has dependency:
+          - libssh (brew install libssh) or (apt-get install libssh)
+          - openssl (brew install openssl) or (apt-get install openssl)
 
 
-install
+
+Install Sugar:
+
  cd ~
  git clone git://github.com/stvkoch/Sugar.git
  sudo ln -s ~/sugar /usr/bin/sugar
 
+---------------------------------------------------------------------
 
 
-Now you can execute sugar commands on your project. First you need create your tasks on deploy.php file on root of your project.
+Now, you can execute sugar commands on your project. First you need create your tasks on deploy.php file on root of your project.
 
-cd ~/www/yourproject
-vi deploy.php
+  cd ~/www/yourproject
+  vi deploy.php
 
-
-@example
-  sugar list
-  sugar help
-  #very especify task
-  sugar hierarchyTaskName ChildiherarchyTaskName ChildChildhierarchyTaskName
-  #run hierarchyTaskName, ChildiherarchyTaskName and ChildChildhierarchyTaskName
-  sugar hierarchyTaskName 
-
-Available commands:
- * help or commands  Prints this help
- * exit              Exits this shell
- * tasks or list     List all task on stack
- * task              Run task
- * clear             Clear terminal
-
-
-You can run sugar command directly on prompt of terminal
-
-@example: see deploy.php file
-  cd ~/Site/application
-  sugar list
-  sugar deploy
-
-
-Create new task:
+Add configs and tasks:
+  set('SSH_USERNAME',   'username1' );
+  set('SSH_PASSWORD',   'passcrypts1');
+  set('SSH_HOST',       'production.hostname.local');
+  set('LOCAL_BASE_DIR', '/home/username/www/application');
+  set('REMOTE_BASE_DIR','/server/www/application');
 
   task('deploy', function(){
     message('woow... I ready to deploy my code');
   });
+  //test stuffs
+  task('test', function(){
+    message('testing, testing, 1,2,3...');
+    return true;
+  });
+  //git tasks
+  task('git', function(){
+    local('cd '. get('LOCAL_BASE_DIR'));
+    $message = prompt('Commit message:');
+    $diffs = local('git diff');
+    local('git add .');
+    local("git commit -m '${message}'");
+    local('git push');
+    //mail('user@address.com','Commit:'.$message, $diff);
+  });
+
+OK, you create your basic tasks  deploy.php file, and now you can execute commands
 
 
+---------------------------------------------------------------------
 
-  ##example hierarchy tasks
+
+@example
+  #list all task on deploy.php file
+  > sugar list
+    - deploy
+    - test
+    - git
+  #run task test
+  > sugar test
+  #show help commands
+  > sugar help
+
+
+You can create hierarchy tasks
+
+  @example hierarchy tasks
 
   //sugar git (run add, commit and push)
   task('git', 'diff', function(){
@@ -90,21 +113,23 @@ Create new task:
     local('git push');
   });
 
-In 'git' example you can run a specific task:
-  sugar git diff 
-    ##run only task git diff
 
-or If you like run all hierarchy tasks: 
-sugar git
- ##run all git tasks. diff, add, commit and push
+You can run one or all hierarchy tasks
+
+  @example
+  > sugar git diff #execute one task
+  > sugar git #execute all git tasks (diff, add, commit and push)
 
 
-----
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
 
+
+Useful commands used to create tasks within the file deploy.php
 
 
 @Commands
-
 
 ========================================================
                     Set
