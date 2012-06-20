@@ -78,9 +78,6 @@ class SSH{
   private $shell_stream;
   function __construct($config){
     $this->config= $config + $this->config;
-
-//var_dump($this->config);exit();
-    
     if(isset($this->config['SSH_PUBLIC_KEY']) && isset($this->config['SSH_PRIVATE_KEY'])){
       $this->con = ssh2_connect($this->config['SSH_HOST'], $this->config['SSH_PORT'], array('hostkey'=>'ssh-dss'));
       if(!$this->con)
@@ -97,8 +94,6 @@ class SSH{
 
     $this->shell_stream = ssh2_shell($this->con, 'ansi', null, 120, 24, SSH2_TERM_UNIT_CHARS);
   }
-
-
   function exec($command, $send_output=true){
     $new_command = 'echo [start];'.$command.';echo [end]';
     fwrite( $this->shell_stream, $new_command. PHP_EOL);
