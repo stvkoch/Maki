@@ -1,0 +1,23 @@
+==install==
+
+
+  dependencies
+    - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
+      pecl ssh2 has dependency:
+        - libssh (brew install libssh) or (apt-get install libssh)
+        - openssl (brew install openssl) or (apt-get install open)
+
+
+#install
+ cd ~
+ git clone git://github.com/stvkoch/Sugar.git
+ sudo ln -s ~/sugar /usr/bin/sugar
+
+
+
+Available commands:
+ * help or commands  Prints this help
+ * exit              Exits this shell
+ * tasks or list     List all task on stack
+ * task              Run task
+ * clear             Clear terminal

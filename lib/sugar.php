@@ -1,6 +1,6 @@
 <?php
 /**
-  * install 
+ * install 
  *  dependencies
  *    libssh (brew install libssh) or (apt-get install libssh)
  *    openssl (brew install openssl) or (apt-get install open)
