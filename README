@@ -19,7 +19,7 @@ Example see deploy.php file! This is useful example:
     - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
       pecl ssh2 has dependency:
         - libssh (brew install libssh) or (apt-get install libssh)
-        - openssl (brew install openssl) or (apt-get install open)
+        - openssl (brew install openssl) or (apt-get install openssl)
 
 
 install
@@ -29,7 +29,11 @@ install
 
 
 
-Now you can execute sugar commands on your project.
+Now you can execute sugar commands on your project. First you need create your tasks on deploy.php file on root of your project.
+
+cd ~/www/yourproject
+vi deploy.php
+
 
 @example
   sugar list
