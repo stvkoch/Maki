@@ -253,20 +253,43 @@ sugar()
 
 
 ========================================================
-                    current_environment
+                    open_environment
 ========================================================
 
-Add new environment on stack
+Add new environment on top of stack. You can have more than one 
+configuration environment, it is these environments that
+run tasks.
 
 open_environment($environment)
 
+@example
+  set('SSH_USERNAME',   'username1', 'production');
+  set('SSH_PASSWORD',   'passcrypts1', 'production');
+  set('SSH_HOST',       'production.hostname.local', 'production');
+
+  set('SSH_USERNAME',   'usernamestaging', 'staging');
+  set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
+  set('SSH_HOST',       'staging.hostname.local', 'staging');
+
+  task('deploy', 'production', function(){
+    open_environment('production');
+    remote('cd /path/to/application');
+    remote('git pull');
+    close_environment();//remove environment of top stack(production), and 'master' environment is available
+  });
+  task('deploy', 'production', function(){
+    open_environment('staging');
+    remote('cd /path/to/application');
+    remote('git pull');
+  });
+
 
 
 ========================================================
-                    current_environment
+                    close_environment
 ========================================================
 
-Remove of stack environment
+Remove environment of stack environments
 
 close_environment($environment)
 
@@ -277,7 +300,7 @@ close_environment($environment)
                     current_environment
 ========================================================
 
-Return current environment on stack
+Return top environment on stack
 
 $env = current_environment()
 $env->name()

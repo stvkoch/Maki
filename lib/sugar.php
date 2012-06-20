@@ -281,20 +281,16 @@ function sugar(){
  *    });
  */
 function open_environment($environment){
-  Sugar::$CURRENT_ENVIRONMENT=$environment;
   Sugar::$STACK_ENVIRONMENTS[]=new Environment($environment);
 }
+
 
 /**
  * Remove from stack environment
  */
-function close_environment($environment){
-  $oldEnvironment = array_pop(Sugar::$STACK_ENVIRONMENTS);
-  if(count(Sugar::$STACK_ENVIRONMENTS)>0){
-    Sugar::$CURRENT_ENVIRONMENT=current_environment()->environment;
-  }
+function close_environment(){
+  array_pop(Sugar::$STACK_ENVIRONMENTS);
 }
-
 
 
 /**
