@@ -11,7 +11,7 @@ What makes?
   - Executes commands on local servers, testing environment and productions servers
 
 How to?
-  - first step is to install on your computer
+  - first step is to install on your computer Sugar
   - Then, at the root of your project to create a file named 'deploy.php'
   - Add tasks to the file 'deploy.php'
   - Execute the commands 'sugar ...'
@@ -72,7 +72,7 @@ Add configs and tasks:
     local('git add .');
     local("git commit -m '${message}'");
     local('git push');
-    //mail('user@address.com','Commit:'.$message, $diff);
+    //mail('developers-mail-list@address.com','Commit:'.$message, $diff);
   });
 
 OK, you create your basic tasks  deploy.php file, and now you can execute commands
@@ -254,6 +254,17 @@ Run hierarchy tasks. You can run task inside tasks.
 
 sugar()
 
+
+@example
+
+  task('deploy',function(){
+    if(sugar('test'))
+      remote('git pull');
+  });
+  task('test', function(){
+    message('testing,testing, 1,2,3,...');
+    return false;//woowww test fail!
+  });
 
 
 
