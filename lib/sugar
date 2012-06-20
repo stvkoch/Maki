@@ -4,50 +4,73 @@
  * Sugar é uma ferramenta para deploy de aplicativos
  * 
  * @example
+ *  sugar
+ *    (assume que na pasta corrente há um ficheiro deploy.php)
  *  sugar --deploy filenamdeploy.php
+ *  sugar list
+ *  sugar help
+ *  sugar taskname
  * or
  *  cd ~/www/my_app
  *  sugar
  * 
  * 
+ * Thnks 
+ *  - CLICommander class
+ *  - phpTerm
  * 
  **/
 require_once 'sugar.php';
 
-//verify file deploy, bash pass php client.php --deploy __DIR_/deploy.php
+//verify file deploy, default file deploy.php on current directory
 if(terminal()->GetArgumentValue('deploy'))
   $deploy_file = terminal()->GetArgumentValue('deploy');
 else
   $deploy_file = getcwd().'/deploy.php';
-
 if(!file_exists($deploy_file)){
-  terminal()->WriteLine("Not fount deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');exit(0);
+  terminal()->WriteLine("Not fount deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
+  exit(0);
 }
-$contents = file($deploy_file, FILE_IGNORE_NEW_LINES);
-if($contents[0]!='<?'){
-  $deploy_file = tempnam(sys_get_temp_dir(), 'deploy');
-  file_put_contents($deploy_file, "<?\n\n".implode("\n", $contents));
-}
-//include your tasks to deploy
+
+//include utils tasks and your tasks to deploy
+include 'utils_tasks.php';
 include $deploy_file;
 
 
-//
-while (true) {
-  $cmd = terminal()->Prompt("Sugar>",'blue');
-  $cmd = strtolower($cmd);
-  $args=explode(' ', $cmd);
-  $cmd = array_shift($args);
+//Filter and verify arguments from command line
+$args = array_filter(terminal()->GetArguments(), function($v){
+  return (terminal()->GetArgumentValue('deploy')!=$v);
+});
 
-  switch (strtok($cmd, ' ')) {
+//maybe do you like think that any command(list, help,...) are a sugar task, it's true if you like!
+//call_user_func_array('sugar', $args);
+
+if(count($args)){
+  handlerCommands($args);
+}else while (true) {
+  $cmd = terminal()->Prompt("Sugar>");
+  $args=explode(' ', $cmd);
+  handlerCommands($args);
+}
+
+
+
+
+/**
+ * Execute arguments from command line
+ * 
+ */
+function handlerCommands($args){
+  $cmd = strtolower($args[0]);
+  switch ($cmd) {
     case 'help':
     case 'commands':
       terminal()->WriteLine("Available commands:");
-      terminal()->WriteLine(" * commands          Prints this help");
-      terminal()->WriteLine(" * exit          Exits this shell");
-      terminal()->WriteLine(" * tasks         List all task on stack");
-      terminal()->WriteLine(" * task          Run task");
-      terminal()->WriteLine(" * clear         Clear terminal");
+      terminal()->WriteLine(" * help or commands  Prints this help");
+      terminal()->WriteLine(" * exit              Exits this shell");
+      terminal()->WriteLine(" * tasks or list     List all task on stack");
+      terminal()->WriteLine(" * task              Run task");
+      terminal()->WriteLine(" * clear             Clear terminal");
       //terminal()->writeLine(" * file          Open file deploy");
       break;
     case 'exit':
@@ -67,19 +90,9 @@ while (true) {
       } catch (TaskNotFountException $e) {
         terminal()->WriteLine("task (".implode(', ', $args).") not found!",'red');
       }
-      
       break;
     default:
-      if ($cmd != '') terminal()->WriteLine("The command '{$cmd}' is not supported",'red');
+      call_user_func_array('sugar', $args);;
   }
 }
 
-
-function print_tasks($stasks, $inc=' - '){
-  foreach ($stasks as $key => $stack) {
-    terminal()->WriteLine($inc . $key);
-    if(is_array($stack)){
-        print_tasks($stack, '   '.$inc);
-    }
-  }
-}

@@ -30,12 +30,11 @@
  *  REMOTE_BASE_DIR
  * 
  * 
-
  */
 require_once 'terminal.php';
 include_once 'shell.php';
 
-//Registries
+//Registry and stacks
 class Sugar{
   static $STACK_TASKS = array();
   static $STACK_ENVIRONMENTS = array();
@@ -43,7 +42,7 @@ class Sugar{
   static $CURRENT_ENVIRONMENT;
 }
 
-//consegue-se abrir um environment para executar os commandos neste ambiente
+//consegue-se abrir multiplos environment, e assim executar comandos no ambiente desejado
 class Environment{
  public $environment;
  public $config = array();
@@ -74,26 +73,50 @@ class Environment{
  *  ssh2
  */
 class SSH{
-  private $config;
+  private $config = array('SSH_ADVERTISE'=>'ssh-dss', 'SSH_PORT'=>22);
   private $con;
   private $shell_stream;
   function __construct($config){
-    $this->config=$config;
-    $this->con = ssh2_connect($this->config['SSH_HOST'], $this->config['SSH_PORT']);
+    $this->config= $config + $this->config;
+
+//var_dump($this->config);exit();
+    
     if(isset($this->config['SSH_PUBLIC_KEY']) && isset($this->config['SSH_PRIVATE_KEY'])){
-      ssh2_auth_pubkey_file($this->con,$this->config['SSH_USERNAME'], $this->config['SSH_PUBLIC_KEY'], $this->config['SSH_PRIVATE_KEY'], $this->config['SSH_SECRET']);
+      $this->con = ssh2_connect($this->config['SSH_HOST'], $this->config['SSH_PORT'], array('hostkey'=>'ssh-dss'));
+      if(!$this->con)
+        terminal()->WriteLine("Connect to host fail. (".$this->config['SSH_HOST'].")",'red');
+      if(!ssh2_auth_pubkey_file($this->con, $this->config['SSH_USERNAME'], $this->config['SSH_PUBLIC_KEY'], $this->config['SSH_PRIVATE_KEY']))
+        terminal()->WriteLine("Authenticate using a public key fail.",'red');
     }else{
-      ssh2_auth_password($this->con, $this->config['SSH_USERNAME'], $this->config['SSH_PASSWORD']);
+      $this->con = ssh2_connect($this->config['SSH_HOST'], $this->config['SSH_PORT']);
+      if(!$this->con)
+        terminal()->WriteLine("Connect to host fail. (".$this->config['SSH_HOST'].")",'red');
+      if(!ssh2_auth_password($this->con, $this->config['SSH_USERNAME'], $this->config['SSH_PASSWORD']))
+        terminal()->WriteLine("SSH authenticated. (".$this->config['SSH_USERNAME'].")",'red');
     }
-    $this->shell_stream = ssh2_shell($this->con, 'xterm');
+
+    $this->shell_stream = ssh2_shell($this->con, 'ansi', null, 120, 24, SSH2_TERM_UNIT_CHARS);
   }
-  function exec($command, $send_output=false){
-    fwrite( $this->shell_stream, $command.PHP_EOL);
-    sleep(1);
-    if($send_output){
-      while($line = fgets($this->shell_stream)) {
-        flush();
-        echo $line."<br />";
+
+
+  function exec($command, $send_output=true){
+    $new_command = 'echo [start];'.$command.';echo [end]';
+    fwrite( $this->shell_stream, $new_command. PHP_EOL);
+    $output = "";
+    $start = false;
+    $start_time = time();
+    $max_time = 10; //time in seconds
+    while(((time()-$start_time) < $max_time)) {
+      $line = fgets($this->shell_stream);
+      if(!strstr($line,$command)) {
+        if(preg_match('/\[start\]/',$line)) {
+          $start = true;
+        }elseif(preg_match('/\[end\]/',$line)) {
+          if($send_output) echo $output;
+          return $output;
+        }elseif($start){
+          $output[] = $line;
+        }
       }
     }
   }
@@ -158,8 +181,9 @@ function task(){
 /**
  * Execute command on remote host via ssh configuration and on current environment
  */
-function remote($command){
-  return current_environment()->ssh()->exec($command);
+function remote($command, $send_output=false){
+  terminal()->WriteLine($command, 'cyan');
+  return current_environment()->ssh()->exec($command, $send_output);
 }
 
 
@@ -168,7 +192,8 @@ function remote($command){
  * Execute command on local
  */
 function local($command, $send_output=false){
- return current_environment()->local()->exec($command);
+  terminal()->WriteLine($command);
+  return current_environment()->local()->exec($command);
 }
 
 
@@ -222,12 +247,14 @@ function sugar(){
   $tasks= array();
   _get_tasks(func_get_args(), $tasks, Sugar::$STACK_TASKS);
   if(!count($tasks)) throw new TaskNotFountException("Task(s) not found", 1);
-  
+  $result=array();
   foreach ($tasks as $callback) {
     if(is_callable($callback)){
-      call_user_func($callback);
+      $result[] = call_user_func($callback);
     }
   }
+  //if only one task
+  return (count($result)==1)?$result[0]:$result;
 }
 
 
@@ -339,6 +366,19 @@ function message($message, $fgColor = null, $bgColor = null, $style = null){
 function prompt($message, $fgColor = null, $bgColor = null, $style = null){
   return terminal()->Prompt($message, $fgColor, $bgColor, $style);
 }
+
+
+
+function print_tasks($stasks=false, $inc=' - '){
+  if(!$stasks) print_tasks(Sugar::$STACK_TASKS);
+  foreach ($stasks as $key => $stack) {
+    terminal()->WriteLine($inc . $key);
+    if(is_array($stack)){
+        print_tasks($stack, '   '.$inc);
+    }
+  }
+}
+
 
 
 /**

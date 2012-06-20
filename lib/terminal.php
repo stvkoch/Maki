@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CLICommander is a set of advanced tools for working with PHP scripts on the linux/unix command line.  
  * 

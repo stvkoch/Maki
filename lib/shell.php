@@ -1,46 +1,51 @@
 <?php 
 /*
-  **************************************************************
-  *                      LocalShell                           *
-  **************************************************************
-  
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You can get a copy of the GNU General Public License from this
-  address: http://www.gnu.org/copyleft/gpl.html#SEC1
-  You can also write to the Free Software Foundation, Inc., 59 Temple
-  Place - Suite 330, Boston, MA  02111-1307, USA.
-  
+  Shell emule persistent shell environment
+
+  @example
+    $shell1 = new Shell('/Home/child');
+      $shell1->exec('cd www');
+      $shell1->exec('ls'); //list /Home/child/www
+
+    $shell2 = new Shell('/Home/parent/docs');
+      $shell2->exec('ls'); //list /Home/parent/docs 
+      $shell2->exec('cd extra');
+
+    $shell1->exec('cat index.html');//show content from /Home/child/www/index.html
+    $shell2->exec('cat manual.doc');//show content from /Home/parent/docs/extra/manual.doc
+
+  @Limitation this is not use proc_open and you cannot access a stream STDIN
+    You cannot 
+      $shell1->exec('sudo -s');
+      $shell1->exec('mySudoPassword');//wrong!
+      but you can:
+      $shell1->exec('sudo -s');
+      $shell1->exec('cat /etc/apache/extra/superconfig.ini'); //run how sudoer
+
   This project is inspired and based on PHP Shell 2.0! Please visit:
   http://www.gimpster.com/wiki/PhpShell
   
-
-  Steven Koch <stvkoch@lellol.com>
+  Adapted by
+  Steven Koch <stvkoch@gmail.com>
 */
 class Shell
 {
-  static $aliases = array('la'   => 'ls -la',
+  static $aliases = array(
+    'la'   => 'ls -la',
     'll'  => 'ls -lvhF',
-    'dir' => 'ls' );
+    'dir' => 'ls'
+  );
 
   function __construct($local_base='')
   {
     if($local_base!=''){
       chdir($local_base);
-    } 
-
+    }
     $this->session['cwd'] = getcwd();
     $this->session['history'] = array();
     $this->session['output'] = '';
     $this->session['command'] ='';
+    $this->session['sudo'] ='';
   }
 
   function exec($command, $send_output=false){
@@ -48,47 +53,6 @@ class Shell
     $this->buildCommandHistory($command);
     return $this->handleCommand($command, $send_output);
   }
-
-
-  function phpCheckVersion($min_version)
-  {
-    $is_version=phpversion();
-
-    list($v1,$v2,$v3,$v4) = sscanf($is_version,"%d.%d.%d%s");
-    list($m1,$m2,$m3,$m4) = sscanf($min_version,"%d.%d.%d%s");
-
-      if($v1>$m1)
-        return(1);
-      elseif($v1<$m1)
-        return(0);
-      if($v2>$m2)
-        return(1);
-      elseif($v2<$m2)
-        return(0);
-      if($v3>$m3)
-        return(1);
-      elseif($v3<$m3)
-        return(0);
-
-      if((!$v4)&&(!$m4))
-        return(1);
-      if(($v4)&&(!$m4))
-      {
-        $is_version=strpos($v4,"pl");
-        if(is_integer($is_version))
-        return(1);
-        return(0);
-      }
-      elseif((!$v4)&&($m4))
-      {
-        $is_version=strpos($m4,"rc");
-        if(is_integer($is_version))
-          return(1);
-        return(0);
-      }
-    return(0);
-  }
-
 
 
   function buildCommandHistory($command)
@@ -99,27 +63,25 @@ class Shell
       {
         $command = stripslashes($command);
       }
-      
       // drop old commands from list if exists
       if (($i = array_search($command, $this->session['history'])) !== false)
       {
         unset($this->session['history'][$i]);
       }
-
       array_unshift($this->session['history'], $command);
     }
   }
 
 
 
-  function handleCommand($command, $send_output=false)
+  function handleCommand($command, $send_output=true)
   {
     $aliases = self::$aliases;
     $output = '';
     $new_dir = $this->session['cwd'];
     if (preg_match('@^[[:blank:]]*cd[[:blank:]]*$@', @$command))
     {
-      $new_dir = getcwd(); //dirname(__FILE__);
+      $this->session['cwd'] = getcwd(); //dirname(__FILE__);
       chdir($new_dir);
     }
     elseif(preg_match('@^[[:blank:]]*cd[[:blank:]]+([^;]+)$@', @$command, $regs))
@@ -135,11 +97,17 @@ class Shell
       if(empty($new_dir)): $new_dir = "/"; endif;
       (@chdir($new_dir)) ? $this->session['cwd'] = $new_dir : $output .= "could not change to: $new_dir\n";
     }
+    elseif($command=='sudo -s'){
+      $this->session['sudo'] = 'sudo -s;';
+    }
+    elseif($command=='exit'){
+      $this->session['sudo'] = '';
+    }
     else
     {
       //if($this->session['cwd']!=$new_dir)
-        //chdir($this->session['cwd']);
-      $output = shell_exec($command);
+      chdir($this->session['cwd']);
+      $output = exec($this->session['sudo'] . $command);
     }
     if($send_output)
       echo $output;
