@@ -34,7 +34,7 @@ Install Sugar:
 
  cd ~
  git clone git://github.com/stvkoch/Sugar.git
- sudo ln -s ~/sugar /usr/bin/sugar
+ sudo ln -s ~/Sugar/bin/sugar /usr/bin/sugar
 
 ---------------------------------------------------------------------
 
