@@ -27,7 +27,7 @@ How to?
                     install
 ---------------------------------------------------------------------
 
-You need this dependencies:
+@dependencies:
     - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
         pecl ssh2 has dependency:
           - libssh (brew install libssh) or (apt-get install libssh)
