@@ -364,7 +364,7 @@ message($message, $fgColor = null, $bgColor = null, $style = null)
                     prompt
 ========================================================
 
-Ready to accept you input
+Ready to accept your input
 
 $string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
 
