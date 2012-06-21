@@ -63,24 +63,24 @@ Add configs and tasks:
 
 
   task('install', 'webserver01', function(){
-    if(prompt('Install now? You are sure??')=='y'){
+    if(prompt('Install now? You are sure??', 'red')=='y'){
       remote('mkdir -p '.get('REMOTE_BASE_DIR'));
       remote('cd '.get('REMOTE_BASE_DIR'));
       remote('git clone '.get('FILES_ON_GIT'));
     }
   });
   task('deploy', function(){
-    message('woow... I ready to deploy my code');
+    message('woow... I ready to deploy my code', 'blue');
   });
   //test stuffs
   task('test', function(){
-    message('testing, testing, 1,2,3...');
+    message('testing, testing, 1,2,3...', 'white');
     return true;
   });
   //git tasks
   task('git', function(){
     local('cd '. get('LOCAL_BASE_DIR'));
-    $message = prompt('Commit message:');
+    $message = prompt('Commit message:','red', 'white');
     $diffs = local('git diff');
     local('git add .');
     local("git commit -m '${message}'");
