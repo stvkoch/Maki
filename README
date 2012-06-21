@@ -73,6 +73,7 @@ Add configs and tasks:
   task('install', 'sqlserver01', function(){
     if(prompt('Install SQL now? You are sure??', 'red', 'white')=='y'){
       local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB > /tmp/current_dump_DB.sql')
+      loca_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');//copy local file to server
       remote('mysql -h '.get('SQL_HOST').' -u usernameSQL -p XPTOPass < /tmp/current_dump_DB.sql');
       remote('cd '.get('REMOTE_BASE_DIR'));
       remote('git clone '.get('FILES_ON_GIT'));
