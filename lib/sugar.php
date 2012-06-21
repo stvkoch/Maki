@@ -118,9 +118,9 @@ class SSH{
   function __destruct(){}
 
   function scp_local_remote($local_file, $remote_file, $mode=0644){
-    return ssh2_scp_send($this->con, $local_file, $remote_file, $mode);
+    return ssh2_scp_send($this->con, $local_file, $remote_file);
   }
-  function scp_remote_local($remote_file, $local_file, $mode){
+  function scp_remote_local($remote_file, $local_file, $mode=0644){
     return ssh2_scp_recv($this->con, $remote_file, $local_file, $mode);
   }
 }
@@ -211,7 +211,7 @@ function remote_local($path_remote, $path_local, $create_mode = 0644){
 /**
  * recursive copy from local file to remote host
  */
-function local_remote($path_local, $path_remote, $create_mode = 0644){
+function local_remote($path_local, $path_remote, $create_mode = '0644'){
   return current_environment()->ssh()->scp_local_remote($path_local, $path_remote, $create_mode);
 }
 
