@@ -82,7 +82,7 @@ Add configs and tasks:
   task('deploy', function(){
     message('woow... I ready to deploy my code', 'blue');
   });
-  
+
   //test stuffs
   task('test', function(){
     message('testing, testing, 1,2,3...', 'white');
@@ -421,4 +421,3 @@ Any question
 
 Steven Koch <stvkoch@gmail.com>
 
-by lellol.com and inov.es
