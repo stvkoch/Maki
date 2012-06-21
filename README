@@ -19,7 +19,7 @@ How to?
 
 
 @roadmap:
-  - implement remote_local function
+  - implement recursive remote_local function
   - implement local_remote function
 
 

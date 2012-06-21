@@ -116,6 +116,13 @@ class SSH{
     }
   }
   function __destruct(){}
+
+  function scp_local_remote($local_file, $remote_file, $mode=0644){
+    return ssh2_scp_send($this->con, $local_file, $remote_file, $mode);
+  }
+  function scp_remote_local($remote_file, $local_file, $mode){
+    return ssh2_scp_recv($this->con, $remote_file, $local_file, $mode);
+  }
 }
 
 /**
@@ -196,18 +203,16 @@ function local($command, $send_output=false){
 /**
  * recursive copy from remote host to local host
  */
-function remote_local($path_remote, $path_local){
-  $command = 'scp '.$path_remote.' '.$path_local;
-  return current_environment()->ssh()->scp_remote_local($command);
+function remote_local($path_remote, $path_local, $create_mode = 0644){
+  return current_environment()->ssh()->scp_remote_local($path_remote, $path_local, $create_mode);
 }
 
 
 /**
  * recursive copy from local file to remote host
  */
-function local_remote($path_local, $path_remote){
-  $command = 'scp '.$path_remote.' '.$path_local;
-  return current_environment()->ssh()->scp_local_remote($command);
+function local_remote($path_local, $path_remote, $create_mode = 0644){
+  return current_environment()->ssh()->scp_local_remote($path_local, $path_remote, $create_mode);
 }
 
 
