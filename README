@@ -41,21 +41,34 @@ Install Sugar:
  git clone git://github.com/stvkoch/Sugar.git
  sudo ln -s ~/Sugar/bin/sugar /usr/bin/sugar
 
+
+
 ---------------------------------------------------------------------
 
 
-Now, you can execute sugar commands on your project. First you need create your tasks on deploy.php file on root of your project.
+Now, you can execute sugar commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.
 
   cd ~/www/yourproject
   vi deploy.php
 
 Add configs and tasks:
+  
   set('SSH_USERNAME',   'username1' );
   set('SSH_PASSWORD',   'passcrypts1');
   set('SSH_HOST',       'production.hostname.local');
+
   set('LOCAL_BASE_DIR', '/home/username/www/application');
   set('REMOTE_BASE_DIR','/server/www/application');
+  set('FILES_ON_GIT','git://github.com/stvkoch/Sugar.git');
 
+
+  task('install', 'webserver01', function(){
+    if(prompt('Install now? You are sure??')=='y'){
+      remote('mkdir -p '.get('REMOTE_BASE_DIR'));
+      remote('cd '.get('REMOTE_BASE_DIR'));
+      remote('git clone '.get('FILES_ON_GIT'));
+    }
+  });
   task('deploy', function(){
     message('woow... I ready to deploy my code');
   });
