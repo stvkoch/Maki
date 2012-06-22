@@ -1,0 +1,116 @@
+#!/usr/bin/php
+<?
+/**
+ * Maki - Deploy like a NINJA
+ * 
+ * @example
+ *  maki --self install --path /usr/local
+ * 
+ *    (assume que na pasta corrente há um ficheiro deploy.php)
+ *  maki --deploy filenamdeploy.php
+ *  maki list
+ *  maki help
+ *  maki taskname
+ * or
+ *  cd ~/www/my_app
+ *  maki
+ * 
+ * 
+ * Thnks 
+ *  - CLICommander class
+ *  - phpTerm
+ * 
+ **/
+define('DIR_ROOT', realpath(__DIR__.'/..'));
+require_once DIR_ROOT.'/lib/maki.php';
+
+
+//verify file deploy, default file deploy.php on current directory
+if(terminal()->ArgumentPassed('self')){
+  $path = terminal()->ArgumentPassed('path') ? terminal()->GetArgumentValue('path').'/maki' : '/usr/local/maki' ;
+  install(terminal()->GetArgumentValue('self'), $path);
+}elseif(terminal()->ArgumentPassed('deploy')){
+  $deploy_file = terminal()->GetArgumentValue('deploy');
+}else{
+  $deploy_file = getcwd().'/deploy.php';
+}
+
+
+if(!file_exists($deploy_file)){
+  terminal()->WriteLine("Not fount deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
+  exit(0);
+}
+
+//include utils tasks and your tasks to deploy
+include DIR_ROOT.'/lib/utils_tasks.php';
+include $deploy_file;
+
+
+//Filter and verify arguments from command line
+$args = array_filter(terminal()->GetArguments(), function($v){
+  return (terminal()->GetArgumentValue('deploy')!=$v);
+});
+
+//maybe do you like think that any command(list, help,...) are a maki task, it's true if you like!
+//call_user_func_array('maki', $args);
+
+if(count($args)){
+  handlerCommands($args);
+}else while (true) {
+  $cmd = terminal()->Prompt("Maki>");
+  $args=explode(' ', $cmd);
+  handlerCommands($args);
+}
+
+
+
+
+/**
+ * Execute arguments from command line
+ * 
+ */
+function handlerCommands($args){
+  $cmd = strtolower($args[0]);
+  switch ($cmd) {
+    case 'help':
+    case 'commands':
+      terminal()->WriteLine("Available commands:");
+      terminal()->WriteLine(" * help or commands  Prints this help");
+      terminal()->WriteLine(" * exit              Exits this shell");
+      terminal()->WriteLine(" * tasks or list     List all task on stack");
+      terminal()->WriteLine(" * task              Run task");
+      terminal()->WriteLine(" * clear             Clear terminal");
+      //terminal()->writeLine(" * file          Open file deploy");
+      break;
+    case 'exit':
+      terminal()->WriteLine("Goodbye!");
+      exit(0);
+    case 'clear':
+      terminal()->Clear();
+      break;
+    case 'list':
+    case 'tasks':
+      print_tasks(Maki::$STACK_TASKS);
+      break;
+    case 'task':
+    case 'maki':
+      try {
+        $result = call_user_func_array('maki', $args);
+      } catch (TaskNotFountException $e) {
+        terminal()->WriteLine("task (".implode(', ', $args).") not found!",'red');
+      }
+      break;
+    default:
+      call_user_func_array('maki', $args);;
+  }
+}
+
+function install($command, $path){
+  if($command=='install'){
+    exec('cp -R '.DIR_ROOT.' '.$path);
+    exec('ln -s '.$path.'/bin/maki /usr/bin/maki');
+  }elseif($command=='uninstall'){
+    message('Remove your self! (rm -R /usr/local/maki), (rm /usr/bin/maki)');
+  }
+  exit();
+}

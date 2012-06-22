@@ -3,16 +3,16 @@
 
 
 ### What is it?
-  - SUGAR helps us to create, manage and execute deploys task.
+  - MAKI helps us to create, manage and execute deploys task.
 
 ### What makes?
   - Executes commands on local servers, testing environment and productions servers
 
 ### How to?
-* first step is to install on your computer Sugar
+* first step is to install on your computer Maki
 * Then, at the root of your project to create a file named 'deploy.php'
 * Add tasks to the file 'deploy.php'
-* Execute the commands 'sugar ...'
+* Execute the commands 'maki ...'
 
 
 
@@ -35,20 +35,27 @@
 
 
 
-### Install Sugar
+### Install Maki
 
 
+  
 
     cd ~
-    git clone git://github.com/stvkoch/Sugar.git
-    sudo ln -s ~/Sugar/bin/sugar /usr/bin/sugar
+    git clone git://github.com/stvkoch/Maki.git
+    sudo ln -s ~/Maki/bin/maki /usr/bin/maki
 
 
+OR
 
+    cd ~
+    git clone git://github.com/stvkoch/Maki.git
+    #copy Maki folder to /usr/local/maki and create link /usr/local/maki/bin/maki to /usr/bin/maki
+    ./Maki/bin/maki --self install
+    
 ***
 
 
-Now, you can execute sugar commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.
+Now, you can execute maki commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.
 
     cd ~/www/yourproject
     vi deploy.php
@@ -63,7 +70,7 @@ Add configs and tasks:
 
     set('LOCAL_BASE_DIR', '/home/username/www/application');
     set('REMOTE_BASE_DIR','/server/www/application');
-    set('FILES_ON_GIT','git://github.com/stvkoch/Sugar.git');
+    set('FILES_ON_GIT','git://github.com/stvkoch/Maki.git');
 
 
     task('install', 'webserver01', function(){
@@ -118,7 +125,7 @@ OK, you create your basic tasks  deploy.php file, and now you can execute comman
 
 list all task on deploy.php file
 
-    ~/www/yourprojectfolder$ sugar list
+    ~/www/yourprojectfolder$ maki list
       - deploy
       - test
       - git
@@ -127,12 +134,12 @@ list all task on deploy.php file
 
 run task test
 
-    ~/www/yourprojectfolder$ sugar test
+    ~/www/yourprojectfolder$ maki test
 
 
 show help commands
 
-    ~/www/yourprojectfolder$ sugar help
+    ~/www/yourprojectfolder$ maki help
 
 
 
@@ -145,7 +152,7 @@ You can create hierarchy tasks
 
 @example hierarchy tasks
 
-    //sugar git (run add, commit and push)
+    //maki git (run add, commit and push)
     task('git', 'diff', function(){
       local('cd '. get('LOCAL_BASE_DIR'));
       $message = local('git diff');
@@ -170,8 +177,8 @@ You can create hierarchy tasks
 You can run one or all hierarchy tasks
 
 @example
-    > sugar git diff #execute one task
-    > sugar git #execute all git tasks (diff, add, commit and push)
+    > maki git diff #execute one task
+    > maki git #execute all git tasks (diff, add, commit and push)
 
 
 ***
@@ -242,8 +249,8 @@ Create new task
        if($result ->errorCount()>0){
          message('Errroor you not can deploy', 'red');
        }else{
-         sugar('git');
-         sugar('deploy');
+         maki('git');
+         maki('deploy');
        }
       });
 
@@ -295,20 +302,20 @@ Copy recursive file from local directory to remote directory
 
 
 ***
-### sugar
+### maki
 
 
 Run hierarchy tasks. You can run task inside tasks.
 
 
-      sugar()
+      maki()
 
 
 
 @example
 
       task('deploy',function(){
-        if(sugar('test'))
+        if(maki('test'))
           remote('git pull');
       });
       task('test', function(){

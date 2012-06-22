@@ -1,10 +1,10 @@
 <?
 /**
  * try:
- *  sugar list
- *  sugar git diff #view diff
- *  sugar git #run all order tasks git (diff, add, commit and push)
- *  sugar deploy
+ *  maki list
+ *  maki git diff #view diff
+ *  maki git #run all order tasks git (diff, add, commit and push)
+ *  maki deploy
  */ 
 set('SSH_USERNAME', 'usernamessh');
 set('SSH_PASSWORD', 'passwordssh');
@@ -14,7 +14,7 @@ set('LOCAL_BASE_DIR', __DIR__);
 set('REMOTE_BASE_DIR', '/home/remoteuser/application');
 
 
-//sugar git (run add, commit and push)
+//maki git (run add, commit and push)
 task('git', 'diff', function(){
   local('cd '. get('LOCAL_BASE_DIR'));
   $message = local('git diff');
@@ -40,12 +40,12 @@ task('git', 'push', function(){
 task( 'deploy', function(){
   //git
   if(strtolower(prompt('Do you like run git task first?(y|N)'))=='y'){
-    sugar('git');
+    maki('git');
   }
   //test
   $firstResultTest=true;
   if(strtolower(prompt('Do you like run test task first?(y|N)'))=='y'){
-    $firstResultTest = sugar('test');
+    $firstResultTest = maki('test');
   }
   //deploy
   if($firstResultTest){
@@ -60,9 +60,9 @@ task( 'deploy', function(){
 
 
 task('test', function(){
-  require_once 'tests/sugar.php';
+  require_once 'tests/maki.php';
   require_once 'PHPUnit.php';
-  $suite  = new PHPUnit_TestSuite("Sugar");
+  $suite  = new PHPUnit_TestSuite("Maki");
   $result = PHPUnit::run($suite);
   //include and run any test
   message($result->toString(), 'white');//show result test
