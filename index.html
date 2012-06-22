@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html>
   <head>
+    
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/print.css" media="print" />
+
+    <style type="text/css" media="screen">
+        .ninja{
+          float: left;
+        }
+        a.button {
+          float:none !important;
+          margin:12px !important;
+        }
+        #downloads{
+          width: 214px;float: right;margin-top: 70px;
+        }
+      </style>
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <title>Maki by stvkoch</title>
+      
   </head>
 
   <body>
     <div id="container">
       <div class="inner">
 
-        <header>
-          <h1>Maki</h1>
-          <h2>Maki - Deploy like a NINJA</h2>
-        </header>
+        
 
-        <section id="downloads" class="clearfix">
+        <section id="downloads" class="clearfix_">
           <a href="https://github.com/stvkoch/Maki/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
           <a href="https://github.com/stvkoch/Maki/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
           <a href="https://github.com/stvkoch/Maki" id="view-on-github" class="button"><span>View on GitHub</span></a>
         </section>
 
+        <header>
+          <h2 style="float: right; margin-right: 123px; ">Maki - Deploy like a NINJA</h2>
+          <h1 style="float: right; margin-right: 125px;">Maki</h1>
+          <p class="ninja"><img src="http://lellol.com/images/ninja32.png" alt="Deploy like a NINJA"></p>
+        </header>
+
+        <div class="clearfix"></div>
+        
+
+        
+
         <hr>
 
         <section id="main_content">
-          <p><img src="http://lellol.com/images/ninja32.png" alt="Deploy like a NINJA"></p>
+          
 
 <h3>What is it?</h3>
 
@@ -67,8 +91,14 @@
 
 <pre><code>cd ~
 git clone git://github.com/stvkoch/Maki.git
-sudo ln -s ~/Maki/bin/maki /usr/bin/maki
-</code></pre>
+sudo ln -s ~/Maki/bin/maki /usr/bin/maki</code></pre>
+
+Or
+
+<pre><code>cd ~
+git clone git://github.com/stvkoch/Maki.git
+./Maki/bin/maki --self install</code></pre>
+
 
 <hr><p>Now, you can execute maki commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.</p>
 
@@ -178,9 +208,14 @@ task('git', 'push', function(){
 
 <p>You can run one or all hierarchy tasks</p>
 
-<p><a href="https://github.com/example" class="user-mention">@example</a>
-    &gt; maki git diff #execute one task
-    &gt; maki git #execute all git tasks (diff, add, commit and push)</p>
+
+<p><a href="https://github.com/example" class="user-mention">@example</a> run hierarchy tasks</p>
+
+<pre><code>#execute one task
+> maki git diff
+> maki git #execute all git tasks (diff, add, commit and push)
+</code></pre>
+
 
 <hr><hr><p>Useful commands used to create tasks within the file deploy.php</p>
 
@@ -387,6 +422,8 @@ $env-&gt;name()
 <p>Any question</p>
 
 <p>Steven Koch <a href="mailto:stvkoch@gmail.com">stvkoch@gmail.com</a></p>
+
+
         </section>
 
         <footer>
