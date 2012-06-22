@@ -5,8 +5,6 @@
  * 
  * @example
  *  maki --self install --path /usr/local
- * 
- *    (assume que na pasta corrente há um ficheiro deploy.php)
  *  maki --deploy filenamdeploy.php
  *  maki list
  *  maki help
@@ -21,28 +19,45 @@
  *  - phpTerm
  * 
  **/
+
+
+//@const
 define('DIR_ROOT', realpath(__DIR__.'/..'));
+
+
+//@base
 require_once DIR_ROOT.'/lib/maki.php';
 
 
-//verify file deploy, default file deploy.php on current directory
-if(terminal()->ArgumentPassed('self')){
+
+if(terminal()->ArgumentPassed('self'))
+{
   $path = terminal()->ArgumentPassed('path') ? terminal()->GetArgumentValue('path').'/maki' : '/usr/local/maki' ;
-  install(terminal()->GetArgumentValue('self'), $path);
-}elseif(terminal()->ArgumentPassed('deploy')){
+  _install(terminal()->GetArgumentValue('self'), $path);
+
+//verify file deploy, default file deploy.php on current directory
+}
+elseif(terminal()->ArgumentPassed('deploy'))
+{
   $deploy_file = terminal()->GetArgumentValue('deploy');
-}else{
+}
+else
+{
   $deploy_file = getcwd().'/deploy.php';
 }
 
 
+//Humm... deploy_file...where are you?
 if(!file_exists($deploy_file)){
   terminal()->WriteLine("Not fount deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
   exit(0);
 }
 
+
 //include utils tasks and your tasks to deploy
 include DIR_ROOT.'/lib/utils_tasks.php';
+
+//include your tasks
 include $deploy_file;
 
 
@@ -51,15 +66,19 @@ $args = array_filter(terminal()->GetArguments(), function($v){
   return (terminal()->GetArgumentValue('deploy')!=$v);
 });
 
-//maybe do you like think that any command(list, help,...) are a maki task, it's true if you like!
-//call_user_func_array('maki', $args);
 
+//maybe do you like think that any command(list, help,...) are a maki task, it's true if you like! see lib/utils_tasks.php
+//call_user_func_array('maki', $args);exit();
+
+
+
+//dispatch commands
 if(count($args)){
-  handlerCommands($args);
+  _handlerCommands($args);
 }else while (true) {
   $cmd = terminal()->Prompt("Maki>");
   $args=explode(' ', $cmd);
-  handlerCommands($args);
+  _handlerCommands($args);
 }
 
 
@@ -67,9 +86,8 @@ if(count($args)){
 
 /**
  * Execute arguments from command line
- * 
  */
-function handlerCommands($args){
+function _handlerCommands($args){
   $cmd = strtolower($args[0]);
   switch ($cmd) {
     case 'help':
@@ -105,7 +123,9 @@ function handlerCommands($args){
   }
 }
 
-function install($command, $path){
+
+
+function _install($command, $path){
   if($command=='install'){
     exec('cp -R '.DIR_ROOT.' '.$path);
     exec('ln -s '.$path.'/bin/maki /usr/bin/maki');
