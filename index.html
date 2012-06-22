@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http://stvkoch.github.com/Maki/stylesheets/print.css" media="print" />
+
+    <style type="text/css" media="screen">
+        .ninja{
+          float: left;
+        }
+        a.button {
+          float:none !important;
+          margin:12px !important;
+        }
+        #downloads{
+          width: 214px;float: right;margin-top: 70px;
+        }
+      </style>
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Maki by stvkoch</title>
+      
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        
+
+        <section id="downloads" class="clearfix_">
+          <a href="https://github.com/stvkoch/Maki/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/stvkoch/Maki/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/stvkoch/Maki" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <header>
+          <h2 style="float: right; margin-right: 123px; ">Maki - Deploy like a NINJA</h2>
+          <h1 style="float: right; margin-right: 125px;">Maki</h1>
+          <p class="ninja"><img src="http://lellol.com/images/ninja32.png" alt="Deploy like a NINJA"></p>
+        </header>
+
+        <div class="clearfix"></div>
+        
+
+        
+
+        <hr>
+
+        <section id="main_content">
+          
+
+<h3>What is it?</h3>
+
+<ul>
+<li>MAKI helps us to create, manage and execute deploys task.</li>
+</ul><h3>What makes?</h3>
+
+<ul>
+<li>Executes commands on local servers, testing environment and productions servers</li>
+</ul><h3>How to?</h3>
+
+<ul>
+<li>first step is to install on your computer Maki</li>
+<li>Then, at the root of your project to create a file named 'deploy.php'</li>
+<li>Add tasks to the file 'deploy.php'</li>
+<li>Execute the commands 'maki ...'</li>
+</ul><hr><p>@roadmap:</p>
+
+<ul>
+<li>implement recursive remote_local function</li>
+<li>implement recursive local_remote function</li>
+</ul><h2>install</h2>
+
+<h3>dependencies:</h3>
+
+<pre><code>- pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
+    pecl ssh2 has dependency:
+      - libssh (brew install libssh) or (apt-get install libssh)
+      - openssl (brew install openssl) or (apt-get install openssl)
+</code></pre>
+
+<h3>Install Maki</h3>
+
+<pre><code>cd ~
+git clone git://github.com/stvkoch/Maki.git
+sudo ln -s ~/Maki/bin/maki /usr/bin/maki</code></pre>
+
+Or
+
+<pre><code>cd ~
+git clone git://github.com/stvkoch/Maki.git
+./Maki/bin/maki --self install</code></pre>
+
+
+<hr><p>Now, you can execute maki commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.</p>
+
+<pre><code>cd ~/www/yourproject
+vi deploy.php
+</code></pre>
+
+<p>Add configs and tasks:</p>
+
+<pre><code>//this is examples what you can do
+set('SSH_USERNAME',   'username1' );
+set('SSH_PASSWORD',   'passcrypts1');
+set('SSH_HOST',       'production.hostname.local');
+
+set('LOCAL_BASE_DIR', '/home/username/www/application');
+set('REMOTE_BASE_DIR','/server/www/application');
+set('FILES_ON_GIT','git://github.com/stvkoch/Maki.git');
+
+
+task('install', 'webserver01', function(){
+  if(prompt('Install now? You are sure??', 'red')=='y'){
+    remote('mkdir -p '.get('REMOTE_BASE_DIR'));
+    remote('cd '.get('REMOTE_BASE_DIR'));
+    remote('git clone '.get('FILES_ON_GIT'));
+  }
+});
+
+task('install', 'sqlserver01', function(){
+  if(prompt('Install SQL now? You are sure??', 'red', 'white')=='y'){
+    local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB &gt; /tmp/current_dump_DB.sql')
+    loca_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');//copy local file to server
+    remote('mysql -h '.get('SQL_HOST').' -u usernameSQL -p XPTOPass &lt; /tmp/current_dump_DB.sql');
+    remote('cd '.get('REMOTE_BASE_DIR'));
+    remote('git clone '.get('FILES_ON_GIT'));
+  }
+});
+
+task('deploy', function(){
+  message('woow... I ready to deploy my code', 'blue');
+});
+
+//test stuffs
+task('test', function(){
+  message('testing, testing, 1,2,3...', 'white');
+  return true;
+});
+
+//git tasks
+task('git', function(){
+  local('cd '. get('LOCAL_BASE_DIR'));
+  $message = prompt('Commit message:','red', 'white');
+  $diffs = local('git diff');
+  local('git add .');
+  local("git commit -m '${message}'");
+  local('git push');
+  //mail('developers-mail-list@address.com','Commit:'.$message, $diff);
+});
+</code></pre>
+
+<p>OK, you create your basic tasks  deploy.php file, and now you can execute commands</p>
+
+<hr><p><a href="https://github.com/example" class="user-mention">@example</a></p>
+
+<p>list all task on deploy.php file</p>
+
+<pre><code>~/www/yourprojectfolder$ maki list
+  - deploy
+  - test
+  - git
+</code></pre>
+
+<p>run task test</p>
+
+<pre><code>~/www/yourprojectfolder$ maki test
+</code></pre>
+
+<p>show help commands</p>
+
+<pre><code>~/www/yourprojectfolder$ maki help
+</code></pre>
+
+<hr><p>You can create hierarchy tasks</p>
+
+<p><a href="https://github.com/example" class="user-mention">@example</a> hierarchy tasks</p>
+
+<pre><code>//maki git (run add, commit and push)
+task('git', 'diff', function(){
+  local('cd '. get('LOCAL_BASE_DIR'));
+  $message = local('git diff');
+  message($message);
+  //if you like, send e-mail with diff
+});
+task('git', 'add', function(){
+  local('cd '. get('LOCAL_BASE_DIR'));
+  local('git add .', true);
+});
+task('git', 'commit', function(){
+  local('cd '. get('LOCAL_BASE_DIR'));
+  $messageCommit = prompt('Message Commit:');
+  local("git commit -m '".$messageCommit."'");
+});
+task('git', 'push', function(){
+  local('cd '. get('LOCAL_BASE_DIR'));
+  local('git push');
+});
+</code></pre>
+
+<p>You can run one or all hierarchy tasks</p>
+
+
+<p><a href="https://github.com/example" class="user-mention">@example</a> run hierarchy tasks</p>
+
+<pre><code>#execute one task
+> maki git diff
+> maki git #execute all git tasks (diff, add, commit and push)
+</code></pre>
+
+
+<hr><hr><p>Useful commands used to create tasks within the file deploy.php</p>
+
+<h2>Commands</h2>
+
+<h3>set</h3>
+
+<p>Set configuration of environment</p>
+
+<pre><code>set($cons, $value, $env='master')
+</code></pre>
+
+<h3>get</h3>
+
+<p>Get specific configuration of environment</p>
+
+<pre><code>  get($cons, $env='master')
+</code></pre>
+
+<h3>get_config_env</h3>
+
+<p>Get configuration of environment</p>
+
+<pre><code>get_config_env($env='master')
+</code></pre>
+
+<h3>Task</h3>
+
+<p>Create new task</p>
+
+<pre><code>task()
+</code></pre>
+
+<p><a href="https://github.com/example" class="user-mention">@example</a></p>
+
+<pre><code>  //create deploy.php on root of your project
+  &lt;?
+
+  set('SSH_USERNAME', 'username1' );
+  set('SSH_PASSWORD', 'passcrypts1');
+  set('SSH_HOST',     'production.hostname.local');
+
+  ...
+
+  task('test', 'frontend', function(){
+   require_once 'frontendTest.php';
+   require_once 'PHPUnit.php';
+   $suite  = new PHPUnit_TestSuite("FrontendTest");
+   $result = PHPUnit::run($suite);
+   if($result -&gt;errorCount()&gt;0){
+     message('Errroor you not can deploy', 'red');
+   }else{
+     maki('git');
+     maki('deploy');
+   }
+  });
+</code></pre>
+
+<hr><h3>remote</h3>
+
+<p>Execute command on remote computer via SSH</p>
+
+<pre><code>  remote($command, $send_output=false)
+</code></pre>
+
+<hr><h3>local</h3>
+
+<p>Execute command on local computer</p>
+
+<pre><code>  local($command, $send_output=false)
+</code></pre>
+
+<hr><h3>remote_local</h3>
+
+<p>Copy recursive file from remote directory to local directory</p>
+
+<pre><code>  remote_local($path_remote, $path_local)
+</code></pre>
+
+<hr><h3>local_remote</h3>
+
+<p>Copy recursive file from local directory to remote directory</p>
+
+<pre><code>  local_remote($path_local, $path_remote)
+</code></pre>
+
+<hr><h3>maki</h3>
+
+<p>Run hierarchy tasks. You can run task inside tasks.</p>
+
+<pre><code>  maki()
+</code></pre>
+
+<p><a href="https://github.com/example" class="user-mention">@example</a></p>
+
+<pre><code>  task('deploy',function(){
+    if(maki('test'))
+      remote('git pull');
+  });
+  task('test', function(){
+    message('testing,testing, 1,2,3,...');
+    return false;//woowww test fail!
+  });
+</code></pre>
+
+<hr><h3>open_environment</h3>
+
+<p>Add new environment on top of stack. You can have more than one 
+configuration environment, it is these environments that
+run tasks.</p>
+
+<pre><code>  open_environment($environment)
+</code></pre>
+
+<p><a href="https://github.com/example" class="user-mention">@example</a>
+      set('SSH_USERNAME',   'username1', 'production');
+      set('SSH_PASSWORD',   'passcrypts1', 'production');
+      set('SSH_HOST',       'production.hostname.local', 'production');</p>
+
+<pre><code>  set('SSH_USERNAME',   'usernamestaging', 'staging');
+  set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
+  set('SSH_HOST',       'staging.hostname.local', 'staging');
+
+  task('deploy', 'production', function(){
+    open_environment('production');
+    remote('cd /path/to/application');
+    remote('git pull');
+    close_environment();//remove environment of top stack(production), and 'master' environment is available
+  });
+  task('deploy', 'production', function(){
+    open_environment('staging');
+    remote('cd /path/to/application');
+    remote('git pull');
+  });
+</code></pre>
+
+<hr><h3>close_environment</h3>
+
+<p>Remove environment of stack environments</p>
+
+<pre><code>  close_environment($environment)
+</code></pre>
+
+<hr><h3>current_environment</h3>
+
+<p>Return top environment on stack</p>
+
+<pre><code>$env = current_environment()
+$env-&gt;name()
+</code></pre>
+
+<hr><h3>message</h3>
+
+<p>Show message on terminal</p>
+
+<pre><code>  message($message, $fgColor = null, $bgColor = null, $style = null)
+</code></pre>
+
+<hr><h3>prompt</h3>
+
+<p>Ready to accept your input</p>
+
+<pre><code>  $string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
+</code></pre>
+
+<hr><h3>configurations</h3>
+
+<pre><code>  SSH_USERNAME, 
+  SSH_PASSWORD, 
+  SSH_HOST, 
+  SSH_PORT,
+  SSH_PUBLIC_KEY, (if set public_key and private_key ssh use this try connect)
+  SSH_PRIVATE_KEY,(if set public_key and private_key ssh use this try connect)
+  SSH_SECRET (if set public_key and private_key ssh use this try connect)
+</code></pre>
+
+<p>PATHs
+      LOCAL_BASE_DIR, 
+      REMOTE_BASE_DIR</p>
+
+<hr><p>example</p>
+
+<pre><code>  set('SSH_USERNAME', 'userprod', 'production');
+  set('SSH_PASSWORD', 'passprod', 'production');
+
+  set('SSH_USERNAME', 'userstag', 'staging');
+  set('SSH_PASSWORD', 'passstag', 'staging');
+
+  task('deploy', function(){
+    open_environment('staging');
+    remote('git pull');
+
+    open_environment('production');
+    remote('git pull'); //run on ssh production
+    close_environment('production');
+
+    remote('service restart apache');//on staging environment
+    close_environment('staging');
+  });
+</code></pre>
+
+<p>See exemple file <strong>deploy.php</strong></p>
+
+<p>Any question</p>
+
+<p>Steven Koch <a href="mailto:stvkoch@gmail.com">stvkoch@gmail.com</a></p>
+
+
+        </section>
+
+        <footer>
+          Maki is maintained by <a href="https://github.com/stvkoch">stvkoch</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-4676195-12");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
+    </div>
+  </body>
+</html>
