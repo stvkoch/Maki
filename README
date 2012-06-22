@@ -1,33 +1,33 @@
 
----------------------------------------------------------------------
-    --- Sugar - deploying applications to remote servers ---
----------------------------------------------------------------------
 
 
-What is it?
+
+### What is it?
   - SUGAR helps us to create, manage and execute deploys task.
 
-What makes?
+### What makes?
   - Executes commands on local servers, testing environment and productions servers
 
-How to?
-  - first step is to install on your computer Sugar
-  - Then, at the root of your project to create a file named 'deploy.php'
-  - Add tasks to the file 'deploy.php'
-  - Execute the commands 'sugar ...'
+### How to?
+* first step is to install on your computer Sugar
+* Then, at the root of your project to create a file named 'deploy.php'
+* Add tasks to the file 'deploy.php'
+* Execute the commands 'sugar ...'
 
 
+
+***
 
 @roadmap:
   - implement recursive remote_local function
-  - implement local_remote function
+  - implement recursive local_remote function
 
 
----------------------------------------------------------------------
-                    install
----------------------------------------------------------------------
 
-@dependencies:
+## install
+
+
+### dependencies:
     - pecl install ssh2 channel://pecl.php.net/ssh2-0.11.3
         pecl ssh2 has dependency:
           - libssh (brew install libssh) or (apt-get install libssh)
@@ -35,390 +35,416 @@ How to?
 
 
 
-Install Sugar:
-
- cd ~
- git clone git://github.com/stvkoch/Sugar.git
- sudo ln -s ~/Sugar/bin/sugar /usr/bin/sugar
+### Install Sugar
 
 
 
----------------------------------------------------------------------
+    cd ~
+    git clone git://github.com/stvkoch/Sugar.git
+    sudo ln -s ~/Sugar/bin/sugar /usr/bin/sugar
+
+
+
+***
 
 
 Now, you can execute sugar commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.
 
-  cd ~/www/yourproject
-  vi deploy.php
+    cd ~/www/yourproject
+    vi deploy.php
+
 
 Add configs and tasks:
-  
-  set('SSH_USERNAME',   'username1' );
-  set('SSH_PASSWORD',   'passcrypts1');
-  set('SSH_HOST',       'production.hostname.local');
 
-  set('LOCAL_BASE_DIR', '/home/username/www/application');
-  set('REMOTE_BASE_DIR','/server/www/application');
-  set('FILES_ON_GIT','git://github.com/stvkoch/Sugar.git');
+    //this is examples what you can do
+    set('SSH_USERNAME',   'username1' );
+    set('SSH_PASSWORD',   'passcrypts1');
+    set('SSH_HOST',       'production.hostname.local');
+
+    set('LOCAL_BASE_DIR', '/home/username/www/application');
+    set('REMOTE_BASE_DIR','/server/www/application');
+    set('FILES_ON_GIT','git://github.com/stvkoch/Sugar.git');
 
 
-  task('install', 'webserver01', function(){
-    if(prompt('Install now? You are sure??', 'red')=='y'){
-      remote('mkdir -p '.get('REMOTE_BASE_DIR'));
-      remote('cd '.get('REMOTE_BASE_DIR'));
-      remote('git clone '.get('FILES_ON_GIT'));
-    }
-  });
+    task('install', 'webserver01', function(){
+      if(prompt('Install now? You are sure??', 'red')=='y'){
+        remote('mkdir -p '.get('REMOTE_BASE_DIR'));
+        remote('cd '.get('REMOTE_BASE_DIR'));
+        remote('git clone '.get('FILES_ON_GIT'));
+      }
+    });
 
-  task('install', 'sqlserver01', function(){
-    if(prompt('Install SQL now? You are sure??', 'red', 'white')=='y'){
-      local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB > /tmp/current_dump_DB.sql')
-      loca_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');//copy local file to server
-      remote('mysql -h '.get('SQL_HOST').' -u usernameSQL -p XPTOPass < /tmp/current_dump_DB.sql');
-      remote('cd '.get('REMOTE_BASE_DIR'));
-      remote('git clone '.get('FILES_ON_GIT'));
-    }
-  });
+    task('install', 'sqlserver01', function(){
+      if(prompt('Install SQL now? You are sure??', 'red', 'white')=='y'){
+        local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB > /tmp/current_dump_DB.sql')
+        loca_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');//copy local file to server
+        remote('mysql -h '.get('SQL_HOST').' -u usernameSQL -p XPTOPass < /tmp/current_dump_DB.sql');
+        remote('cd '.get('REMOTE_BASE_DIR'));
+        remote('git clone '.get('FILES_ON_GIT'));
+      }
+    });
 
-  task('deploy', function(){
-    message('woow... I ready to deploy my code', 'blue');
-  });
+    task('deploy', function(){
+      message('woow... I ready to deploy my code', 'blue');
+    });
 
-  //test stuffs
-  task('test', function(){
-    message('testing, testing, 1,2,3...', 'white');
-    return true;
-  });
+    //test stuffs
+    task('test', function(){
+      message('testing, testing, 1,2,3...', 'white');
+      return true;
+    });
 
-  //git tasks
-  task('git', function(){
-    local('cd '. get('LOCAL_BASE_DIR'));
-    $message = prompt('Commit message:','red', 'white');
-    $diffs = local('git diff');
-    local('git add .');
-    local("git commit -m '${message}'");
-    local('git push');
-    //mail('developers-mail-list@address.com','Commit:'.$message, $diff);
-  });
+    //git tasks
+    task('git', function(){
+      local('cd '. get('LOCAL_BASE_DIR'));
+      $message = prompt('Commit message:','red', 'white');
+      $diffs = local('git diff');
+      local('git add .');
+      local("git commit -m '${message}'");
+      local('git push');
+      //mail('developers-mail-list@address.com','Commit:'.$message, $diff);
+    });
+
 
 OK, you create your basic tasks  deploy.php file, and now you can execute commands
 
 
----------------------------------------------------------------------
+
+***
 
 
 @example
-  #list all task on deploy.php file
-  > sugar list
-    - deploy
-    - test
-    - git
-  #run task test
-  > sugar test
-  #show help commands
-  > sugar help
+
+
+list all task on deploy.php file
+
+    ~/www/yourprojectfolder$ sugar list
+      - deploy
+      - test
+      - git
+
+
+
+run task test
+
+    ~/www/yourprojectfolder$ sugar test
+
+
+show help commands
+
+    ~/www/yourprojectfolder$ sugar help
+
+
+
+***
+
 
 
 You can create hierarchy tasks
 
-  @example hierarchy tasks
 
-  //sugar git (run add, commit and push)
-  task('git', 'diff', function(){
-    local('cd '. get('LOCAL_BASE_DIR'));
-    $message = local('git diff');
-    message($message);
-    //if you like, send e-mail with diff
-  });
-  task('git', 'add', function(){
-    local('cd '. get('LOCAL_BASE_DIR'));
-    local('git add .', true);
-  });
-  task('git', 'commit', function(){
-    local('cd '. get('LOCAL_BASE_DIR'));
-    $messageCommit = prompt('Message Commit:');
-    local("git commit -m '".$messageCommit."'");
-  });
-  task('git', 'push', function(){
-    local('cd '. get('LOCAL_BASE_DIR'));
-    local('git push');
-  });
+@example hierarchy tasks
+
+    //sugar git (run add, commit and push)
+    task('git', 'diff', function(){
+      local('cd '. get('LOCAL_BASE_DIR'));
+      $message = local('git diff');
+      message($message);
+      //if you like, send e-mail with diff
+    });
+    task('git', 'add', function(){
+      local('cd '. get('LOCAL_BASE_DIR'));
+      local('git add .', true);
+    });
+    task('git', 'commit', function(){
+      local('cd '. get('LOCAL_BASE_DIR'));
+      $messageCommit = prompt('Message Commit:');
+      local("git commit -m '".$messageCommit."'");
+    });
+    task('git', 'push', function(){
+      local('cd '. get('LOCAL_BASE_DIR'));
+      local('git push');
+    });
 
 
 You can run one or all hierarchy tasks
 
-  @example
-  > sugar git diff #execute one task
-  > sugar git #execute all git tasks (diff, add, commit and push)
+@example
+    > sugar git diff #execute one task
+    > sugar git #execute all git tasks (diff, add, commit and push)
 
 
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
+***
+***
 
 
 Useful commands used to create tasks within the file deploy.php
 
 
-@Commands
 
-========================================================
-                    Set
-========================================================
+## Commands
+
+
+### set
+
 
 Set configuration of environment
 
-set($cons, $value, $env='master')
+    set($cons, $value, $env='master')
 
 
 
-========================================================
-                    get
-========================================================
+
+### get
+
 
 Get specific configuration of environment
 
-get($cons, $env='master')
+      get($cons, $env='master')
 
 
 
 
-========================================================
-                    get_config_env
-========================================================
+
+### get_config_env
+
 
 Get configuration of environment
 
-get_config_env($env='master')
+    get_config_env($env='master')
 
 
 
-========================================================
-                    Task
-========================================================
+
+### Task
+
 
 Create new task
 
-task()
+    task()
 
 @example
-//create deploy.php on root of your project
-  <?
-  
-  set('SSH_USERNAME', 'username1' );
-  set('SSH_PASSWORD', 'passcrypts1');
-  set('SSH_HOST',     'production.hostname.local');
 
-  ...
+      //create deploy.php on root of your project
+      <?
+      
+      set('SSH_USERNAME', 'username1' );
+      set('SSH_PASSWORD', 'passcrypts1');
+      set('SSH_HOST',     'production.hostname.local');
 
-  task('test', 'frontend', function(){
-   require_once 'frontendTest.php';
-   require_once 'PHPUnit.php';
-   $suite  = new PHPUnit_TestSuite("FrontendTest");
-   $result = PHPUnit::run($suite);
-   if($result ->errorCount()>0){
-     message('Errroor you not can deploy', 'red');
-   }else{
-     sugar('git');
-     sugar('deploy');
-   }
-  });
+      ...
+
+      task('test', 'frontend', function(){
+       require_once 'frontendTest.php';
+       require_once 'PHPUnit.php';
+       $suite  = new PHPUnit_TestSuite("FrontendTest");
+       $result = PHPUnit::run($suite);
+       if($result ->errorCount()>0){
+         message('Errroor you not can deploy', 'red');
+       }else{
+         sugar('git');
+         sugar('deploy');
+       }
+      });
 
 
+***
 
-========================================================
-                    remote
-========================================================
+### remote
+
 
 Execute command on remote computer via SSH
 
-remote($command, $send_output=false)
+      remote($command, $send_output=false)
 
 
 
 
-========================================================
-                    local
-========================================================
+***
+### local
+
 
 Execute command on local computer
 
-local($command, $send_output=false)
+      local($command, $send_output=false)
 
 
 
 
-========================================================
-                    remote_local
-========================================================
+***
+### remote_local
+
 
 
 Copy recursive file from remote directory to local directory
 
-remote_local($path_remote, $path_local)
+      remote_local($path_remote, $path_local)
 
 
 
 
-========================================================
-                    local_remote
-========================================================
+***
+### local_remote
+
 
 Copy recursive file from local directory to remote directory
 
-local_remote($path_local, $path_remote)
+      local_remote($path_local, $path_remote)
 
 
 
 
-========================================================
-                    sugar
-========================================================
+***
+### sugar
+
 
 Run hierarchy tasks. You can run task inside tasks.
 
 
-sugar()
+      sugar()
+
 
 
 @example
 
-  task('deploy',function(){
-    if(sugar('test'))
-      remote('git pull');
-  });
-  task('test', function(){
-    message('testing,testing, 1,2,3,...');
-    return false;//woowww test fail!
-  });
+      task('deploy',function(){
+        if(sugar('test'))
+          remote('git pull');
+      });
+      task('test', function(){
+        message('testing,testing, 1,2,3,...');
+        return false;//woowww test fail!
+      });
 
 
 
-========================================================
-                    open_environment
-========================================================
+***
+### open_environment
+
 
 Add new environment on top of stack. You can have more than one 
 configuration environment, it is these environments that
 run tasks.
 
-open_environment($environment)
+      open_environment($environment)
+
 
 @example
-  set('SSH_USERNAME',   'username1', 'production');
-  set('SSH_PASSWORD',   'passcrypts1', 'production');
-  set('SSH_HOST',       'production.hostname.local', 'production');
+      set('SSH_USERNAME',   'username1', 'production');
+      set('SSH_PASSWORD',   'passcrypts1', 'production');
+      set('SSH_HOST',       'production.hostname.local', 'production');
 
-  set('SSH_USERNAME',   'usernamestaging', 'staging');
-  set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
-  set('SSH_HOST',       'staging.hostname.local', 'staging');
+      set('SSH_USERNAME',   'usernamestaging', 'staging');
+      set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
+      set('SSH_HOST',       'staging.hostname.local', 'staging');
 
-  task('deploy', 'production', function(){
-    open_environment('production');
-    remote('cd /path/to/application');
-    remote('git pull');
-    close_environment();//remove environment of top stack(production), and 'master' environment is available
-  });
-  task('deploy', 'production', function(){
-    open_environment('staging');
-    remote('cd /path/to/application');
-    remote('git pull');
-  });
+      task('deploy', 'production', function(){
+        open_environment('production');
+        remote('cd /path/to/application');
+        remote('git pull');
+        close_environment();//remove environment of top stack(production), and 'master' environment is available
+      });
+      task('deploy', 'production', function(){
+        open_environment('staging');
+        remote('cd /path/to/application');
+        remote('git pull');
+      });
 
 
 
-========================================================
-                    close_environment
-========================================================
+***
+### close_environment
+
 
 Remove environment of stack environments
 
-close_environment($environment)
+      close_environment($environment)
 
 
 
 
-========================================================
-                    current_environment
-========================================================
+***
+### current_environment
+
 
 Return top environment on stack
 
-$env = current_environment()
-$env->name()
+    $env = current_environment()
+    $env->name()
 
 
 
 
-========================================================
-                    message
-========================================================
+***
+### message
+
 
 Show message on terminal
 
-message($message, $fgColor = null, $bgColor = null, $style = null)
+      message($message, $fgColor = null, $bgColor = null, $style = null)
 
 
 
 
-========================================================
-                    prompt
-========================================================
+***
+### prompt
+
 
 Ready to accept your input
 
-$string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
+      $string = prompt($message, $fgColor = null, $bgColor = null, $style = null)
 
 
 
 
-========================================================
-                    configurations
-========================================================
-
-
-  SSH_USERNAME, 
-  SSH_PASSWORD, 
-  SSH_HOST, 
-  SSH_PORT,
-  SSH_PUBLIC_KEY, (if set public_key and private_key ssh use this try connect)
-  SSH_PRIVATE_KEY,(if set public_key and private_key ssh use this try connect)
-  SSH_SECRET (if set public_key and private_key ssh use this try connect)
-  
-//configuration PATHs
-  LOCAL_BASE_DIR, 
-  REMOTE_BASE_DIR
-
-
-_________________________________________________________
+***
+### configurations
 
 
 
-@example
+      SSH_USERNAME, 
+      SSH_PASSWORD, 
+      SSH_HOST, 
+      SSH_PORT,
+      SSH_PUBLIC_KEY, (if set public_key and private_key ssh use this try connect)
+      SSH_PRIVATE_KEY,(if set public_key and private_key ssh use this try connect)
+      SSH_SECRET (if set public_key and private_key ssh use this try connect)
+      
+PATHs
+      LOCAL_BASE_DIR, 
+      REMOTE_BASE_DIR
 
-set('SSH_USERNAME', 'userprod', 'production');
-set('SSH_PASSWORD', 'passprod', 'production');
 
-set('SSH_USERNAME', 'userstag', 'staging');
-set('SSH_PASSWORD', 'passstag', 'staging');
-
-task('deploy', function(){
-  open_environment('staging');
-  remote('git pull');
-
-  open_environment('production');
-  remote('git pull'); //run on ssh production
-  close_environment('production');
-
-  remote('service restart apache');//on staging environment
-  close_environment('staging');
-});
+***
 
 
 
+example
+
+      set('SSH_USERNAME', 'userprod', 'production');
+      set('SSH_PASSWORD', 'passprod', 'production');
+
+      set('SSH_USERNAME', 'userstag', 'staging');
+      set('SSH_PASSWORD', 'passstag', 'staging');
+
+      task('deploy', function(){
+        open_environment('staging');
+        remote('git pull');
+
+        open_environment('production');
+        remote('git pull'); //run on ssh production
+        close_environment('production');
+
+        remote('service restart apache');//on staging environment
+        close_environment('staging');
+      });
+
+
+
+
+See exemple file __deploy.php__
 
 
 Any question
 
 Steven Koch <stvkoch@gmail.com>
-
