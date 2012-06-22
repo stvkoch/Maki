@@ -129,16 +129,23 @@ task('install', 'webserver01', function(){
 
 task('install', 'sqlserver01', function(){
   if(prompt('Install SQL now? You are sure??', 'red', 'white')=='y'){
-    local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB &gt; /tmp/current_dump_DB.sql')
-    loca_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');//copy local file to server
+    //Dump current schema and save file
+    local('mysqldump -h master_or_dev.sqlserver.domain.ext -u userlocal -p passlocal --databases super_DB &gt; /tmp/current_dump_DB.sql');
+    //copy local file to server
+    local_remote('/tmp/current_dump_DB.sql', '/tmp/current_dump_DB.sql');
+    //execute install DB
     remote('mysql -h '.get('SQL_HOST').' -u usernameSQL -p XPTOPass &lt; /tmp/current_dump_DB.sql');
-    remote('cd '.get('REMOTE_BASE_DIR'));
-    remote('git clone '.get('FILES_ON_GIT'));
   }
 });
 
 task('deploy', function(){
-  message('woow... I ready to deploy my code', 'blue');
+  if(maki('test')){
+    message('woow... I ready to deploy my code', 'blue');
+    remote('cd '.get('REMOTE_BASE_DIR'));
+    remote('git clone '.get('FILES_ON_GIT'));
+  }else{
+    message('uhmmm.... test fail!', 'red');
+  }
 });
 
 //test stuffs
