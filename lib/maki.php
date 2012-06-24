@@ -446,4 +446,59 @@ function _nested_array($args, $callback, &$nested=array(), $i=0){
 }
 
 
+
+/**
+ * Execute arguments from command line
+ */
+function _handlerCommands($args){
+  $cmd = strtolower($args[0]);
+  switch ($cmd) {
+    case 'help':
+    case 'commands':
+      terminal()->WriteLine("Available commands:");
+      terminal()->WriteLine(" * help or commands  Prints this help");
+      terminal()->WriteLine(" * exit              Exits this shell");
+      terminal()->WriteLine(" * tasks or list     List all task on stack");
+      terminal()->WriteLine(" * task              Run task");
+      terminal()->WriteLine(" * clear             Clear terminal");
+      //terminal()->writeLine(" * file          Open file deploy");
+      break;
+    case 'exit':
+      terminal()->WriteLine("Goodbye!");
+      exit(0);
+    case 'clear':
+      terminal()->Clear();
+      break;
+    case 'list':
+    case 'tasks':
+      print_tasks(Maki::$STACK_TASKS);
+      break;
+    case 'task':
+    case 'maki':
+      try {
+        $result = call_user_func_array('maki', $args);
+      } catch (TaskNotFountException $e) {
+        terminal()->WriteLine("task (".implode(', ', $args).") not found!",'red');
+      }
+      break;
+    default:
+      call_user_func_array('maki', $args);;
+  }
+}
+
+
+
+function _install($command, $path){
+  if($command=='install'){
+    exec('cp -R '.DIR_ROOT.' '.$path);
+    exec('ln -s '.$path.'/bin/maki /usr/bin/maki');
+  }elseif($command=='update'){
+    exec('cd '.DIR_ROOT.'; git pull;');
+  }elseif($command=='uninstall'){
+    message('Remove your self! (rm -R /usr/local/maki), (rm /usr/bin/maki)');
+  }
+  exit();
+}
+
+
 class TaskNotFountException extends Exception{}
