@@ -49,7 +49,7 @@ else
 
 //Humm... deploy_file...where are you?
 if(!file_exists($deploy_file)){
-  terminal()->WriteLine("Not fount deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
+  terminal()->WriteLine("Not found deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
   exit(0);
 }
 
