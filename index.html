@@ -338,12 +338,14 @@ run tasks.</p>
 <pre><code>  open_environment($environment)
 </code></pre>
 
-<p><a href="https://github.com/example" class="user-mention">@example</a>
-      set('SSH_USERNAME',   'username1', 'production');
-      set('SSH_PASSWORD',   'passcrypts1', 'production');
-      set('SSH_HOST',       'production.hostname.local', 'production');</p>
+<p><a href="https://github.com/example" class="user-mention">@example</a></p>
 
-<pre><code>  set('SSH_USERNAME',   'usernamestaging', 'staging');
+<pre><code>
+  set('SSH_USERNAME',   'username1', 'production');
+  set('SSH_PASSWORD',   'passcrypts1', 'production');
+  set('SSH_HOST',       'production.hostname.local', 'production');
+
+  set('SSH_USERNAME',   'usernamestaging', 'staging');
   set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
   set('SSH_HOST',       'staging.hostname.local', 'staging');
 
