@@ -1,6 +1,5 @@
 
 
-
 ### What is it?
   - MAKI helps us to create, manage and execute deploys task.
 
@@ -339,11 +338,11 @@ run tasks.
       set('SSH_USERNAME',   'username1', 'production');
       set('SSH_PASSWORD',   'passcrypts1', 'production');
       set('SSH_HOST',       'production.hostname.local', 'production');
-
+      
       set('SSH_USERNAME',   'usernamestaging', 'staging');
       set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
       set('SSH_HOST',       'staging.hostname.local', 'staging');
-
+      
       task('deploy', 'production', function(){
         open_environment('production');
         remote('cd /path/to/application');
