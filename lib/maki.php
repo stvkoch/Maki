@@ -170,9 +170,11 @@ function set($cons, $value, $env='master'){
     throw new InvalidArgumentException("@$cons exists", 1);
   return Maki::$CONST[$env][$cons]=$value;
 }
+
 function get($cons, $env='master'){
   return Maki::$CONST[$env][$cons];
 }
+
 function get_config_env($env='master'){
   return (isset(Maki::$CONST[$env]))?Maki::$CONST[$env]:array();
 }
@@ -221,9 +223,9 @@ function remote($command, $send_output=false){
 /**
  * Execute command on local
  */
-function local($command, $send_output=false){
+function local($command, $send_output=true){
   terminal()->WriteLine($command);
-  return current_environment()->local()->exec($command);
+  return current_environment()->local()->exec($command, $send_output);
 }
 
 

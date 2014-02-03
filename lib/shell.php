@@ -24,12 +24,13 @@
 
   This project is inspired and based on PHP Shell 2.0! Please visit:
   http://www.gimpster.com/wiki/PhpShell
-  
+
   Adapted by
   Steven Koch <stvkoch@gmail.com>
 */
 class Shell
 {
+
   static $aliases = array(
     'la'   => 'ls -la',
     'll'  => 'ls -lvhF',
@@ -48,7 +49,7 @@ class Shell
     $this->session['sudo'] ='';
   }
 
-  function exec($command, $send_output=false){
+  function exec($command, $send_output=true){
     $this->session['command'] = $command;
     $this->buildCommandHistory($command);
     return $this->handleCommand($command, $send_output);
@@ -71,7 +72,6 @@ class Shell
       array_unshift($this->session['history'], $command);
     }
   }
-
 
 
   function handleCommand($command, $send_output=true)
@@ -113,4 +113,5 @@ class Shell
       echo $output;
     return $output;
   }
+
 }
