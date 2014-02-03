@@ -2,15 +2,15 @@
 
 
 ### What is it?
-  - MAKI helps us to create, manage and execute deploys task.
+  - MAKI helps us to create, manage and execute taskss task.
 
 ### What makes?
   - Executes commands on local servers, testing environment and productions servers
 
 ### How to?
 * first step is to install on your computer Maki
-* Then, at the root of your project to create a file named 'deploy.php'
-* Add tasks to the file 'deploy.php'
+* Then, at the root of your project to create a file named 'tasks.php'
+* Add tasks to the file 'tasks.php'
 * Execute the commands 'maki ...'
 
 
@@ -54,10 +54,10 @@ OR
 ***
 
 
-Now, you can execute maki commands on your project. First you need create your tasks on deploy.php file, create it on root of your project.
+Now, you can execute maki commands on your project. First you need create your tasks on tasks.php file, create it on root of your project.
 
     cd ~/www/yourproject
-    vi deploy.php
+    vi tasks.php
 
 
 Add configs and tasks:
@@ -90,8 +90,8 @@ Add configs and tasks:
       }
     });
 
-    task('deploy', function(){
-      message('woow... I ready to deploy my code', 'blue');
+    task('tasks', function(){
+      message('woow... I ready to tasks my code', 'blue');
     });
 
     //test stuffs
@@ -112,7 +112,7 @@ Add configs and tasks:
     });
 
 
-OK, you create your basic tasks  deploy.php file, and now you can execute commands
+OK, you create your basic tasks  tasks.php file, and now you can execute commands
 
 
 
@@ -122,10 +122,10 @@ OK, you create your basic tasks  deploy.php file, and now you can execute comman
 @example
 
 
-list all task on deploy.php file
+list all task on tasks.php file
 
     ~/www/yourprojectfolder$ maki list
-      - deploy
+      - tasks
       - test
       - git
 
@@ -184,7 +184,7 @@ You can run one or all hierarchy tasks
 ***
 
 
-Useful commands used to create tasks within the file deploy.php
+Useful commands used to create tasks within the file tasks.php
 
 
 
@@ -231,7 +231,7 @@ Create new task
 
 @example
 
-      //create deploy.php on root of your project
+      //create tasks.php on root of your project
       <?
       
       set('SSH_USERNAME', 'username1' );
@@ -246,10 +246,10 @@ Create new task
        $suite  = new PHPUnit_TestSuite("FrontendTest");
        $result = PHPUnit::run($suite);
        if($result ->errorCount()>0){
-         message('Errroor you not can deploy', 'red');
+         message('Errroor you not can tasks', 'red');
        }else{
          maki('git');
-         maki('deploy');
+         maki('tasks');
        }
       });
 
@@ -313,7 +313,7 @@ Run hierarchy tasks. You can run task inside tasks.
 
 @example
 
-      task('deploy',function(){
+      task('tasks',function(){
         if(maki('test'))
           remote('git pull');
       });
@@ -344,13 +344,13 @@ run tasks.
       set('SSH_PASSWORD',   'passcryptsstaging', 'staging');
       set('SSH_HOST',       'staging.hostname.local', 'staging');
 
-      task('deploy', 'production', function(){
+      task('tasks', 'production', function(){
         open_environment('production');
         remote('cd /path/to/application');
         remote('git pull');
         close_environment();//remove environment of top stack(production), and 'master' environment is available
       });
-      task('deploy', 'production', function(){
+      task('tasks', 'production', function(){
         open_environment('staging');
         remote('cd /path/to/application');
         remote('git pull');
@@ -433,7 +433,7 @@ example
       set('SSH_USERNAME', 'userstag', 'staging');
       set('SSH_PASSWORD', 'passstag', 'staging');
 
-      task('deploy', function(){
+      task('tasks', function(){
         open_environment('staging');
         remote('git pull');
 
@@ -448,7 +448,7 @@ example
 
 
 
-See exemple file __deploy.php__
+See exemple file __tasks.php__
 
 
 Any question

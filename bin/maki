@@ -1,11 +1,11 @@
 #!/usr/bin/php
 <?
 /**
- * Maki - Deploy like a NINJA
+ * Maki - tasks like a NINJA
  * 
  * @example
  *  maki --self install --path /usr/local
- *  maki --deploy filenamdeploy.php
+ *  maki --tasks filenamtasks.php
  *  maki list
  *  maki help
  *  maki taskname
@@ -35,34 +35,34 @@ if(terminal()->ArgumentPassed('self'))
   $path = terminal()->ArgumentPassed('path') ? terminal()->GetArgumentValue('path').'/maki' : '/usr/local/maki' ;
   _install(terminal()->GetArgumentValue('self'), $path);
 
-//verify file deploy, default file deploy.php on current directory
+//verify file tasks, default file tasks.php on current directory
 }
-elseif(terminal()->ArgumentPassed('deploy'))
+elseif(terminal()->ArgumentPassed('tasks'))
 {
-  $deploy_file = terminal()->GetArgumentValue('deploy');
+  $tasks_file = terminal()->GetArgumentValue('tasks');
 }
 else
 {
-  $deploy_file = getcwd().'/deploy.php';
+  $tasks_file = getcwd().'/tasks.php';
 }
 
 
-//Humm... deploy_file...where are you?
-if(!file_exists($deploy_file)){
-  terminal()->WriteLine("Not found deploy file on current directory, please use --deploy fullpath/filenamedeploy",'red');
+//Humm... tasks_file...where are you?
+if(!file_exists($tasks_file)){
+  terminal()->WriteLine("Not found tasks file on current directory, please use --tasks fullpath/filenametasks",'red');
   exit(0);
 }
 
-//include utils tasks and your tasks to deploy
+//include utils tasks and your tasks to tasks
 include DIR_ROOT.'/lib/utils_tasks.php';
 
 //include your tasks
-include $deploy_file;
+include $tasks_file;
 
 
 //Filter and verify arguments from command line
 $args = array_filter(terminal()->GetArguments(), function($v){
-  return (terminal()->GetArgumentValue('deploy')!=$v);
+  return (terminal()->GetArgumentValue('tasks')!=$v);
 });
 
 

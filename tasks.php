@@ -4,7 +4,7 @@
  *  maki list
  *  maki git diff #view diff
  *  maki git #run all order tasks git (diff, add, commit and push)
- *  maki deploy
+ *  maki tasks
  */ 
 set('SSH_USERNAME', 'usernamessh');
 set('SSH_PASSWORD', 'passwordssh');
@@ -36,8 +36,8 @@ task('git', 'push', function(){
 });
 
 
-//deploy
-task( 'deploy', function(){
+//tasks
+task( 'tasks', function(){
   //git
   if(strtolower(prompt('Do you like run git task first?(y|N)'))=='y'){
     maki('git');
@@ -47,14 +47,14 @@ task( 'deploy', function(){
   if(strtolower(prompt('Do you like run test task first?(y|N)'))=='y'){
     $firstResultTest = maki('test');
   }
-  //deploy
+  //tasks
   if($firstResultTest){
-    if(strtolower(prompt('You are sure deploy app?(y|N)'))=='y'){
+    if(strtolower(prompt('You are sure tasks app?(y|N)'))=='y'){
       remote('cd '. get('REMOTE_BASE_DIR'));
       remote('git pull');
     }
   }else{
-    message('You cannot deploy appp. Test fail!', 'red');
+    message('You cannot tasks appp. Test fail!', 'red');
   }
 });
 

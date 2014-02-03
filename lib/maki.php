@@ -180,9 +180,9 @@ function get_config_env($env='master'){
 
 
 /**
- * Create new task. This is the heart of your deploy file.
+ * Create new task. This is the heart of your tasks file.
  * @example
- * //create deploy.php on root of your project
+ * //create tasks.php on root of your project
  * <?
  * set('SSH_USERNAME', 'username1', 'production');//config environment production
  * set('SSH_PASSWORD', 'passcrypts1', 'production');//config environment production
@@ -193,10 +193,10 @@ function get_config_env($env='master'){
  *  $suite  = new PHPUnit_TestSuite("AppTest");
  *  $result = PHPUnit::run($suite);
  *  if($result ->errorCount()>0){
- *    message('Errroor you not can deploy', 'red');
+ *    message('Errroor you not can tasks', 'red');
  *  }else{
  *    maki('git');//see maki
- *    maki('deploy', 'productio');
+ *    maki('tasks', 'productio');
  *  }
  * });
  */
@@ -295,7 +295,7 @@ function maki(){
  *    set('SSH_USERNAME', 'username2', 'staging');//config environment staging
  *    set('SSH_PASSWORD', 'passcrypts2', 'staging');//config environment staging
  *    set('SSH_HOST',     'staging.hostname.local', 'staging');//config environment staging
- *    task('deploy', function(){
+ *    task('tasks', function(){
  *      open_environment('staging');
  *      remote('cd staging_base_name_dir');
  *      remote('git pull');
@@ -323,7 +323,7 @@ function close_environment(){
 
 /**
  * Return current environment on stack
- * é util quando queres ter mais de um ambiente de deploy
+ * é util quando queres ter mais de um ambiente de tasks
  *  You can config lot environment. And then deside who is execute command. You think is function very similar on mysql use command, on you select database name and run any command.
  *  @example
  *    set('SSH_USERNAME', 'username1', 'production');//config environment production
@@ -332,7 +332,7 @@ function close_environment(){
  *    set('SSH_USERNAME', 'username2', 'staging');//config environment staging
  *    set('SSH_PASSWORD', 'passcrypts2', 'staging');//config environment staging
  *    set('SSH_HOST',     'staging.hostname.local', 'staging');//config environment staging
- *    task('deploy', 'staging', function(){
+ *    task('tasks', 'staging', function(){
  *      open_environment('staging');
  *      remote('cd staging_base_name_dir');
  *      remote('git pull');
@@ -461,7 +461,7 @@ function _handlerCommands($args){
       terminal()->WriteLine(" * tasks or list     List all task on stack");
       terminal()->WriteLine(" * task              Run task");
       terminal()->WriteLine(" * clear             Clear terminal");
-      //terminal()->writeLine(" * file          Open file deploy");
+      //terminal()->writeLine(" * file          Open file tasks");
       break;
     case 'exit':
       terminal()->WriteLine("Goodbye!");
