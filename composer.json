@@ -1,0 +1,6 @@
+{
+    "name": "stvkoch/Maki",
+    "description": "Taks",
+    "license": "Apache2",
+    "bin": ["bin/maki"],
+}
